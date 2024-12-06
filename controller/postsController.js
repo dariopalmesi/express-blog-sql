@@ -7,6 +7,8 @@ const connection = require('../db/connection')
 const index = (req, res) => {
 
     const sql = 'SELECT * FROM posts'
+    console.log(sql);
+
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: `Database query failed` })
@@ -17,7 +19,7 @@ const index = (req, res) => {
 
 const show = (req, res) => {
 
-    const id = req.params.id
+    const id = req.params.slug
     console.log(id);
 
 
@@ -26,7 +28,7 @@ const show = (req, res) => {
     connection.query(sql, [id], (err, results) => {
         if (err) return res.status(500).json({ error: 'Database query failed' });
         if (results.length === 0) return res.status(404).json({ error: 'Posts not found' })
-        res, json(results[0]);
+        res.json(results[0]);
     })
 
 }
@@ -81,16 +83,21 @@ const update = (req, res) => {
 
 const destroy = (req, res) => {
 
-    const { id } = req.params
 
-    connection.query('DELETE FROM posts WHERE id =?', [id], (err) => {
-        if (err) {
-            return res.status(500).json({
-                error: 'Failed to delete post'
-            })
-        }
+    const id = req.params.slug
 
-        res.status(204)
+
+    const sql = 'DELETE FROM posts WHERE id=?'
+
+
+    connection.query(sql, [id], (err, results) => {
+        console.log(err, results);
+        if (err) return res.status(500).json({ error: err })
+
+        if (results.affectedRows === 0) return res.status(404).json({ error: `404! No posts found with the this id: ${id}` })
+
+        return res.json({ status: 204, affectedRows: results.affectedRows })
+
     })
 
 
