@@ -1,4 +1,4 @@
-const posts = require('../db/db.js')
+// const posts = require('../db/db.js')
 const fs = require('fs')
 const connection = require('../db/connection')
 
@@ -17,11 +17,13 @@ const index = (req, res) => {
 
 const show = (req, res) => {
 
-    const slug = req.params.slug
+    const id = req.params.id
+    console.log(id);
 
-    const sql = 'SELECT * FROM posts WHERE slug =?'
 
-    connection.query(sql, [slug], (err, results) => {
+    const sql = 'SELECT * FROM posts WHERE id =?'
+
+    connection.query(sql, [id], (err, results) => {
         if (err) return res.status(500).json({ error: 'Database query failed' });
         if (results.length === 0) return res.status(404).json({ error: 'Posts not found' })
         res, json(results[0]);
@@ -78,22 +80,39 @@ const update = (req, res) => {
 }
 
 const destroy = (req, res) => {
-    const post = posts.find(post => post.slug === req.params.slug)
 
-    if (!post) {
-        return res.status(404).json({
-            error: `404! Not found`
-        })
-    }
+    const { id } = req.params
 
-    const newPost = posts.filter((post) => post.slug !== req.params.slug)
+    connection.query('DELETE FROM posts WHERE id =?', [id], (err) => {
+        if (err) {
+            return res.status(500).json({
+                error: 'Failed to delete post'
+            })
+        }
 
-    fs.writeFileSync('./db/db.js', `module.exports = ${JSON.stringify(newPost, null, 4)}`)
-
-    res.status(200).json({
-        status: 200,
-        data: newPost
+        res.status(204)
     })
+
+
+
+
+
+    // const post = posts.find(post => post.slug === req.params.slug)
+
+    // if (!post) {
+    //     return res.status(404).json({
+    //         error: `404! Not found`
+    //     })
+    // }
+
+    // const newPost = posts.filter((post) => post.slug !== req.params.slug)
+
+    // fs.writeFileSync('./db/db.js', `module.exports = ${JSON.stringify(newPost, null, 4)}`)
+
+    // res.status(200).json({
+    //     status: 200,
+    //     data: newPost
+    // })
 
 }
 
