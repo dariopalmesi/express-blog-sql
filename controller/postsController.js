@@ -1,29 +1,12 @@
 const posts = require('../db/db.js')
 const fs = require('fs')
+const connection = require('../db/connection')
+
 
 
 const index = (req, res) => {
 
-    // let markup = ''
 
-
-    // db.forEach(post => {
-    //     const {title, slug, content, image, tags} = post;
-
-    //     markup += `
-    //     <ul>
-    //         <li>
-    //             <h2>${title}</h2>
-    //             <h3>${slug}</h3>
-    //             <h4>${content}</h4>
-    //             <img src="/img/${image}"</img> <br>
-    //             <span>${tags}</span>
-    //         </li>
-    //       </ul>  
-    //     `
-
-    // }) 
-    // res.send(markup)
     res.json({
         data: posts,
         counter: posts.length
